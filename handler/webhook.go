@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"git-webhook/config"
 	"git-webhook/models"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os/exec"
 	"path/filepath"
@@ -29,7 +29,7 @@ func (h *WebhookHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
