@@ -7,6 +7,7 @@ import (
 	"git-webhook/models"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -81,6 +82,36 @@ func executeCommands(project config.Project) error {
 	// 规范化路径
 	project.Path = filepath.Clean(project.Path)
 
+	// 检查项目目录是否存在
+	if _, err := os.Stat(project.Path); os.IsNotExist(err) {
+		// 创建项目目录
+		if err := os.MkdirAll(project.Path, 0755); err != nil {
+			return fmt.Errorf("failed to create project directory: %v", err)
+		}
+
+		// 初始化 git 仓库并拉取指定分支
+		commands := []string{
+			fmt.Sprintf("git clone -b %s %s .", project.Branch, project.Repository),
+		}
+
+		for _, cmd := range commands {
+			var command *exec.Cmd
+			if runtime.GOOS == "windows" {
+				command = exec.Command("cmd", "/C", cmd)
+			} else {
+				command = exec.Command("sh", "-c", cmd)
+			}
+
+			command.Dir = project.Path
+			output, err := command.CombinedOutput()
+			if err != nil {
+				return fmt.Errorf("failed to execute init command '%s': %v\nOutput: %s", cmd, err, string(output))
+			}
+			fmt.Printf("Init command '%s' output:\n%s\n", cmd, string(output))
+		}
+	}
+
+	// 执行配置的命令
 	for _, cmd := range project.Commands {
 		var command *exec.Cmd
 		if runtime.GOOS == "windows" {

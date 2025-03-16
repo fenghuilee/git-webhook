@@ -19,11 +19,12 @@ type Config struct {
 }
 
 type Project struct {
-	Name     string   `yaml:"name"`
-	Path     string   `yaml:"path"`
-	Branch   string   `yaml:"branch"`
-	Secret   string   `yaml:"secret"`
-	Commands []string `yaml:"commands"`
+	Name       string   `yaml:"name"`
+	Path       string   `yaml:"path"`
+	Branch     string   `yaml:"branch"`
+	Secret     string   `yaml:"secret"`
+	Repository string   `yaml:"repository"`
+	Commands   []string `yaml:"commands"`
 }
 
 // LoadConfig 加载配置文件并返回配置对象

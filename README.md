@@ -18,7 +18,7 @@
 
 ```bash
 # 克隆仓库
-git clone [your-repository-url]
+git clone https://github.com/fenghuilee/git-webhook.git
 
 # 进入项目目录
 cd git-webhook
@@ -45,9 +45,10 @@ server:
 
 projects:
   # Windows 配置示例
-  - name: "windows-project"
-    path: "D:/projects/myapp"  # Windows 路径
+  - name: "your-project"
+    path: "D:/projects/your-project"  # Windows 路径
     branch: "main"
+    repository: "https://gitlab.com/your-username/your-project.git"
     secret: "project-secret-1"
     commands:
       - "git pull origin main"
@@ -55,9 +56,10 @@ projects:
       - "npm run build"
 
   # Linux 配置示例
-  - name: "linux-project"
-    path: "/var/www/myapp"    # Linux 路径
+  - name: "another-project"
+    path: "/var/www/another-project"    # Linux 路径
     branch: "main"
+    repository: "https://gitlab.com/your-username/another-project.git"
     secret: "project-secret-2"
     commands:
       - "git pull origin main"
@@ -73,6 +75,7 @@ projects:
   - `name`: 项目名称
   - `path`: 项目本地路径（支持 Windows 和 Linux 格式）
   - `branch`: 触发构建的分支
+  - `repository`: Git 仓库地址
   - `secret`: 项目特定的 Webhook 密钥
   - `commands`: 要执行的命令列表
 
