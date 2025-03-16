@@ -1,0 +1,13 @@
+server:
+  port: 8080
+  secret: "your-gitlab-webhook-secret"
+
+projects:
+  - name: "example-project"
+    path: "/path/to/your/project"
+    branch: "main"
+    secret: "project-specific-secret"
+    commands:
+      - "git pull origin main"
+      - "npm install"
+      - "npm run build" 
