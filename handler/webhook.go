@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -76,13 +78,28 @@ func verifySignature(secret, signature string) bool {
 }
 
 func executeCommands(project config.Project) error {
+	// 规范化路径
+	project.Path = filepath.Clean(project.Path)
+
 	for _, cmd := range project.Commands {
-		command := exec.Command("sh", "-c", cmd)
+		var command *exec.Cmd
+		if runtime.GOOS == "windows" {
+			command = exec.Command("cmd", "/C", cmd)
+		} else {
+			command = exec.Command("sh", "-c", cmd)
+		}
+
+		// 设置工作目录
 		command.Dir = project.Path
 
-		if err := command.Run(); err != nil {
-			return fmt.Errorf("failed to execute command '%s': %v", cmd, err)
+		// 获取命令的输出
+		output, err := command.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("failed to execute command '%s': %v\nOutput: %s", cmd, err, string(output))
 		}
+
+		// 打印命令输出
+		fmt.Printf("Command '%s' output:\n%s\n", cmd, string(output))
 	}
 	return nil
 }

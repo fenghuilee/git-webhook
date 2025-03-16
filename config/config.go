@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/fsnotify/fsnotify"
@@ -48,11 +49,26 @@ func (c *Config) load(filename string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	return yaml.Unmarshal(data, c)
+	if err := yaml.Unmarshal(data, c); err != nil {
+		return err
+	}
+
+	// 规范化所有项目路径
+	for i := range c.Projects {
+		c.Projects[i].Path = filepath.Clean(c.Projects[i].Path)
+	}
+
+	return nil
 }
 
 // watch 监控配置文件变化
 func (c *Config) watch(filename string) {
+	// 规范化配置文件路径
+	absPath, err := filepath.Abs(filename)
+	if err != nil {
+		return
+	}
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return
@@ -60,7 +76,7 @@ func (c *Config) watch(filename string) {
 	defer watcher.Close()
 
 	// 添加文件到监控列表
-	if err := watcher.Add(filename); err != nil {
+	if err := watcher.Add(filepath.Dir(absPath)); err != nil {
 		return
 	}
 
@@ -71,7 +87,7 @@ func (c *Config) watch(filename string) {
 				return
 			}
 			// 文件被修改时重新加载配置
-			if event.Has(fsnotify.Write) {
+			if filepath.Clean(event.Name) == absPath && event.Has(fsnotify.Write) {
 				if err := c.load(filename); err != nil {
 					// 这里可以添加错误日志记录
 					continue
