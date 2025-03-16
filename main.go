@@ -22,7 +22,8 @@ func main() {
 	http.HandleFunc("/webhook", webhookHandler.Handle)
 
 	// 启动服务器
-	addr := fmt.Sprintf(":%d", cfg.Server.Port)
+	serverConfig := cfg.GetServerConfig()
+	addr := fmt.Sprintf(":%d", serverConfig.Port)
 	log.Printf("Starting server on %s", addr)
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Server failed: %v", err)

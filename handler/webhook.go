@@ -49,7 +49,7 @@ func (h *WebhookHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	branch := strings.TrimPrefix(payload.Ref, "refs/heads/")
 
 	// 查找匹配的项目配置
-	for _, project := range h.config.Projects {
+	for _, project := range h.config.GetProjects() {
 		if project.Branch == branch {
 			// 验证项目密钥
 			if !verifySignature(project.Secret, signature) {
