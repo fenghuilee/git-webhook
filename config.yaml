@@ -3,10 +3,23 @@ server:
   secret: "your-gitlab-webhook-secret"
 
 projects:
-  - name: "example-project"
-    path: "/path/to/your/project"
+  # Windows 配置示例
+  - name: "your-project"
+    path: "D:/projects/your-project"  # Windows 路径
     branch: "main"
-    secret: "project-specific-secret"
+    repository: "https://gitlab.com/your-username/your-project.git"
+    secret: "project-secret-1"
+    commands:
+      - "git pull origin main"
+      - "npm install"
+      - "npm run build"
+
+  # Linux 配置示例
+  - name: "another-project"
+    path: "/var/www/another-project"    # Linux 路径
+    branch: "main"
+    repository: "https://gitlab.com/your-username/another-project.git"
+    secret: "project-secret-2"
     commands:
       - "git pull origin main"
       - "npm install"
